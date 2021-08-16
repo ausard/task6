@@ -1,0 +1,39 @@
+version: '3.3'
+services:  
+  registry:
+    container_name: registry
+    restart: always
+    image: registry:2
+    ports:
+      - 5000:5000
+    volumes:
+    - ./data:/var/lib/registry    
+    networks:
+      - network  
+
+  nexus:
+    container_name: nexus
+    restart: always
+    image: sonatype/nexus:oss
+    ports:
+      - 8081:8081
+    networks:
+      - network
+  jenkins:
+    image: jenkins/jenkins:lts
+    privileged: true
+    user: root
+    ports:
+      - 8080:8080
+      - 50003:50000
+    container_name: jenkins
+    volumes:
+      - ~/jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      
+networks:
+  network:
+    driver: bridge 
+
+    
+  

@@ -1,0 +1,62 @@
+apply plugin: 'war'
+
+task updateGreeting {
+  doLast {
+    println "This will add a version ${version} to ${buildDir}/resources/main/greeting.txt "
+    def outF = new File("${buildDir}/resources/main/greeting.txt")
+    if(!outF.exists()) {
+      outF.createNewFile()
+    }
+    def inF = new File("${projectDir}/src/main/resources/greeting.txt")
+    def lineF = inF.readLines()[0]
+    outF.write(lineF+' '+project.property('version'))
+  }
+}
+
+updateGreeting.dependsOn(processResources)
+build.dependsOn(updateGreeting)
+build.shouldRunAfter(updateGreeting)
+
+war {
+  archiveName 'app.war'
+  manifest {
+    attributes("Implementation-Title": project.name, "Implementation-Version": project.version, "Implementation-Timestamp": new Date())
+  }
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  // This dependency is found on compile classpath of this component and consumers.
+
+  // https://mvnrepository.com/artifact/log4j/log4j
+  compile group: 'log4j', name: 'log4j', version: '1.2.17'
+  // https://mvnrepository.com/artifact/commons-io/commons-io
+  compile group: 'commons-io', name: 'commons-io', version: '2.6'
+  // https://mvnrepository.com/artifact/junit/junit
+  testCompile group: 'junit', name: 'junit', version: '4.13'
+}
+
+task incrementVersion {
+  doLast {
+    def majorVersion, minorVersion, buildVersion
+    def resVersion
+
+    print 'This will increase version '
+    print project.property('version')
+    print ' => '
+    majorVersion = project.property('version').tokenize('.')[0] as Integer
+    minorVersion = project.property('version').tokenize('.')[1] as Integer
+    buildVersion = project.property('version').tokenize('.')[2] as Integer
+    buildVersion++
+    resVersion =  majorVersion+'.'+minorVersion+'.'+buildVersion
+    println resVersion
+
+    ant.propertyfile(file: "gradle.properties") {
+        entry(key: "version", value: resVersion)
+    }
+    print 'and write to gradle.properties file'
+  }
+}
