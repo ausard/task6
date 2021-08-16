@@ -1,7 +1,7 @@
 node {
     def versionString
     stage('Clone code') {
-        git branch: 'task6', url: 'https://github.com/ausard/task6'
+        git branch: 'master', url: 'https://github.com/ausard/task6'
     }
 
     stage('Gradle build') {
