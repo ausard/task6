@@ -1,7 +1,7 @@
 node {
     def versionString
     stage('Clone code') {
-        git branch: 'task6', url: 'https://github.com/ausard/Modules'
+        git branch: 'task6', url: 'https://github.com/ausard/task6'
     }
 
     stage('Gradle build') {
@@ -86,11 +86,11 @@ node {
         sh 'git config --global user.email "ausard@yandex.ru"'
         sh 'git commit -m "Version changed to '+versionString+'"'            
         withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-            sh 'git push --set-upstream https://$USERNAME:$PASSWORD@github.com/ausard/Modules.git task6'
+            sh 'git push --set-upstream https://$USERNAME:$PASSWORD@github.com/ausard/task6.git task6'
             sh 'git checkout master'
             sh 'git merge task6'
             sh 'git tag '+versionString
-            sh 'git push --tags https://$USERNAME:$PASSWORD@github.com/ausard/Modules.git'
+            sh 'git push --tags https://$USERNAME:$PASSWORD@github.com/ausard/task6.git'
         }
     }    
 }
